@@ -107,6 +107,7 @@ load_default_config() {
   CONFIG_db_exclude=( 'information_schema' )
   CONFIG_db_exclude_pattern=()
   CONFIG_table_exclude=()
+  CONFIG_table_include=()
   CONFIG_mailcontent='stdout'
   CONFIG_mail_maxattsize=4000
   CONFIG_mail_splitandtar='yes'
@@ -596,7 +597,11 @@ parse_configuration () {
 	    else
 		    opt=( "${opt[@]}" '--databases' )
 	    fi
+	    if [[ ${CONFIG_table_include[*]} ]]; then
+	      CONFIG_table_exclude=()
+      fi
     else
+      CONFIG_table_include=()
 	    opt=( "${opt[@]}" '--databases' )
     fi
 
@@ -2187,7 +2192,7 @@ method_backup () {
 		  if [[ "${CONFIG_mysql_dump_use_separate_dirs}" = "yes" ]]; then
 			for db in "${CONFIG_db_names[@]}"; do
 			  echo "Daily Backup of Database ( ${db} )"
-			  process_dbs "$subfolder" "$prefix" "$midfix" "$extension" "$rotation" "$rotation_divisor" "$rotation_string" 0 "$db"
+			  process_dbs "$subfolder" "$prefix" "$midfix" "$extension" "$rotation" "$rotation_divisor" "$rotation_string" 0 "$db" "${CONFIG_table_include[@]}"
 			  echo "----------------------------------------------------------------------"
 			done
 		  else
